@@ -15,7 +15,7 @@
     <% content_text = @memo["content"].gsub(/\n|\r|\r\n/, "<br>") %>
     <div class="show-memo_items"><%= content_text %></div>
     <div class="form_button_area">
-      <a href="edit" class="button_center">変更</a>
+      <a href="/memos/<%= @memo["id"] %>/edit" class="button_center">変更</a>
       <a href="delete" class="button_center">削除</a>
     </div>
   </form>

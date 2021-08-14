@@ -26,6 +26,19 @@ get '/memos/:id' do |id|
   erb :'show'
 end
 
+get '/memos/:id/edit' do |id|
+  memos = load_all_memos
+
+  memos.each do |memo|
+    if memo["id"] == id.to_i
+      @memo = memo
+      break
+    end
+  end
+
+  erb :'edit'
+end
+
 post '/memos' do
   id = File.read("db/memos/index.txt").to_i
   memo = {:id => id, :title => params[:title], :content => params[:content] }
@@ -40,11 +53,19 @@ post '/memos' do
   redirect to('/')
 end
 
-delete '/delete' do
-  # TODO
+patch '/memos/:id' do |id|
+  memos = load_all_memos
+  memo_to_edit = search_memo_by_id(memos, id)
+
+  memo_to_edit["title"] = params[:title]
+  memo_to_edit["content"] = params[:content]
+
+  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+
+  redirect to('/')
 end
 
-patch '/edit' do
+delete '/delete' do
   # TODO
 end
 
@@ -52,6 +73,14 @@ private
 
 def load_all_memos
   JSON.load(File.read("db/memos/memos.json"))
+end
+
+def search_memo_by_id(memos, id)
+  memos.each do |memo|
+    if memo["id"] == id.to_i
+      return memo
+    end
+  end
 end
 
 

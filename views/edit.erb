@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/style.css" type="text/css" media="all">
+  <title>メモアプリ Edit memo</title>
+</head>
+<body>
+<header>
+  <h1 class="header__title">メモアプリ</h1>
+</header>
+<div class="body">
+  <form action="/memos/<%= @memo["id"] %>" method="post" class="form">
+    <input type="hidden" name="_method" value="patch">
+    <input class="form_item form_title" type="text" name="title" value="<%= @memo["title"] %>">
+    <textarea class="form_item form_content" name="content" rows="5"><%= @memo["content"] %></textarea>
+    <div class="form_button_area">
+      <input class="form_item form_button" type="submit" value="変更">
+    </div>
+  </form>
+</div>
+</body>
