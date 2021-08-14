@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/css/style.css" type="text/css" media="all">
+  <title>メモアプリ New memo</title>
+</head>
+<body>
+<header>
+  <h1 class="header__title">メモアプリ</h1>
+</header>
+<div class="body">
+  <form action="memos" method="post" class="form">
+    <input class="form_item form_title" type="text" name="title" value="タイトル">
+    <textarea class="form_item form_content" name="content" value="本文" rows="5"></textarea>
+    <div class="form_button_area">
+      <input class="form_item form_button" type="submit" value="保存">
+    </div>
+  </form>
+</div>
+</body>
