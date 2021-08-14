@@ -13,7 +13,9 @@
   <div class="body">
     <ul>
     <% @memos.each do |memo| %>
-      <li><%= memo["title"] %></li>
+      <li>
+        <a href="/memos/<%= memo["id"] %>"><%= memo["title"] %></a>
+      </li>
     <% end %>
     </ul>
   </div>

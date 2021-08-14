@@ -13,16 +13,16 @@ get '/new' do
   erb :'new'
 end
 
-get '/show' do
-  # ここでタイトルをうけとらないとだめ
-  title = "これは工藤のメモのテストです"
+get '/memos/:id' do |id|
   memos = load_all_memos
+
   memos.each do |memo|
-    if memo["title"] == title
+    if memo["id"] == id.to_i
       @memo = memo
       break
     end
   end
+
   erb :'show'
 end
 
