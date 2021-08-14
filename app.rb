@@ -27,13 +27,15 @@ get '/show' do
 end
 
 post '/memos' do
-  memo = {:title => params[:title], :content => params[:content] }
+  id = File.read("db/memos/index.txt").to_i
+  memo = {:id => id, :title => params[:title], :content => params[:content] }
   memos = load_all_memos
   memos.push memo
 
-  File.open("db/memos/memos.json", "w") do |f|
-    f.puts JSON.pretty_generate(memos)
-  end
+  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+
+  # idに1を足して、次に作成されるメモが連番になるようにする
+  File.open("db/memos/index.txt", "w") { |f| f.puts id + 1 }
 
   redirect to('/')
 end
