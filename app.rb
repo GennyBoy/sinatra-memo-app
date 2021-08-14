@@ -14,17 +14,10 @@ get '/new' do
 end
 
 post '/memos' do
-  title = params[:title]
-  content = params[:content]
-  memo = {:title => title, :content => content }
-  # 同じタイトルがあったら？
-  # まずここでjsonファイルを読み込み、同じタイトルないか探してあったらエラー出す処理をかく?
-  # 配列にする.一行ずつ読み込んで
+  memo = {:title => params[:title], :content => params[:content] }
   memos = JSON.load(File.read("db/memos/memos.json"))
   memos.push memo
 
-  ### なぜか追加したやつだけstringになってるからそこの修正から
-  # ファイルの書き込み処理
   File.open("db/memos/memos.json", "w") do |f|
     f.puts JSON.pretty_generate(memos)
   end
