@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="/css/style.css" type="text/css" media="all">
-  <title>メモアプリ New memo</title>
+  <title>メモアプリ Show memo</title>
 </head>
 <body>
 <header>
@@ -11,10 +11,12 @@
 </header>
 <div class="body">
   <form action="memos" method="post" class="form">
-    <input class="form_item form_title" type="text" name="title" value="タイトル">
-    <textarea class="form_item form_content" name="content" rows="5">本文</textarea>
+    <h2 class="show-memo_items"><%= @memo["title"] %></h2>
+    <% content_text = @memo["content"].gsub(/\n|\r|\r\n/, "<br>") %>
+    <div class="show-memo_items"><%= content_text %></div>
     <div class="form_button_area">
-      <input class="form_item form_button" type="submit" value="保存">
+      <a href="edit" class="button_center">変更</a>
+      <a href="delete" class="button_center">削除</a>
     </div>
   </form>
 </div>
