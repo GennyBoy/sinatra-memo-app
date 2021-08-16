@@ -1,6 +1,9 @@
+require 'erb'
+require 'json'
 require 'sinatra'
 require 'sinatra/reloader'
-require 'json'
+
+include ERB::Util
 
 get '/' do
   @memos = load_all_memos
@@ -29,7 +32,7 @@ end
 
 post '/memos' do
   id = File.read("db/memos/index.txt").to_i
-  memo = {:id => id, :title => params[:title], :content => params[:content] }
+  memo = {:id => id, :title => h(params[:title]), :content => h(params[:content]) }
   memos = load_all_memos
   memos.push memo
 
@@ -45,8 +48,8 @@ patch '/memos/:id' do |id|
   memos = load_all_memos
   memo_to_edit = fetch_memo_by_id(memos, id)
 
-  memo_to_edit["title"] = params[:title]
-  memo_to_edit["content"] = params[:content]
+  memo_to_edit["title"] = h(params[:title])
+  memo_to_edit["content"] = h(params[:content])
 
   write_memos_json(memos)
 
@@ -83,5 +86,10 @@ def fetch_memo_by_id(memos, id)
   end
 end
 
+helpers do
+  def h(text)
+    escape_html(text)
+  end
+end
 
 
