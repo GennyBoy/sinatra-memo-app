@@ -53,6 +53,11 @@
     text-align: center;
 }
 
+.show-memo_form_button_area {
+    text-align: center;
+    display: flex;
+}
+
 .show-memo_items {
     display: inline-block;
     font-size: 32px;

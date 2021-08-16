@@ -10,14 +10,17 @@
   <h1 class="header__title">メモアプリ</h1>
 </header>
 <div class="body">
-  <form action="memos" method="post" class="form">
+  <div class="form">
     <h2 class="show-memo_items"><%= @memo["title"] %></h2>
     <% content_text = @memo["content"].gsub(/\n|\r|\r\n/, "<br>") %>
     <div class="show-memo_items"><%= content_text %></div>
-    <div class="form_button_area">
+    <div class="show-memo_form_button_area">
       <a href="/memos/<%= @memo["id"] %>/edit" class="button_center">変更</a>
-      <a href="delete" class="button_center">削除</a>
+      <form action="/memos/<%= @memo["id"] %>" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="削除" class="button_center form_button">
+      </form>
     </div>
-  </form>
+  </div>
 </div>
 </body>

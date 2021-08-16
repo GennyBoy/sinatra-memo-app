@@ -2,8 +2,6 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'json'
 
-set :show_exceptions, :after_handler
-
 get '/' do
   @memos = load_all_memos
   erb :'index'
@@ -16,12 +14,7 @@ end
 get '/memos/:id' do |id|
   memos = load_all_memos
 
-  memos.each do |memo|
-    if memo["id"] == id.to_i
-      @memo = memo
-      break
-    end
-  end
+  @memo = fetch_memo_by_id(memos, id)
 
   erb :'show'
 end
@@ -29,12 +22,7 @@ end
 get '/memos/:id/edit' do |id|
   memos = load_all_memos
 
-  memos.each do |memo|
-    if memo["id"] == id.to_i
-      @memo = memo
-      break
-    end
-  end
+  @memo = fetch_memo_by_id(memos, id)
 
   erb :'edit'
 end
@@ -45,7 +33,7 @@ post '/memos' do
   memos = load_all_memos
   memos.push memo
 
-  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+  write_memos_json(memos)
 
   # idに1を足して、次に作成されるメモが連番になるようにする
   File.open("db/memos/index.txt", "w") { |f| f.puts id + 1 }
@@ -55,18 +43,26 @@ end
 
 patch '/memos/:id' do |id|
   memos = load_all_memos
-  memo_to_edit = search_memo_by_id(memos, id)
+  memo_to_edit = fetch_memo_by_id(memos, id)
 
   memo_to_edit["title"] = params[:title]
   memo_to_edit["content"] = params[:content]
 
-  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+  write_memos_json(memos)
 
   redirect to('/')
 end
 
-delete '/delete' do
-  # TODO
+delete '/memos/:id' do |id|
+  memos = load_all_memos
+
+  memos.each_with_index do |memo, index|
+    memos.delete_at index if memo["id"] == id.to_i
+  end
+
+  write_memos_json(memos)
+
+  redirect to('/')
 end
 
 private
@@ -75,7 +71,11 @@ def load_all_memos
   JSON.load(File.read("db/memos/memos.json"))
 end
 
-def search_memo_by_id(memos, id)
+def write_memos_json(memos)
+  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+end
+
+def fetch_memo_by_id(memos, id)
   memos.each do |memo|
     if memo["id"] == id.to_i
       return memo
