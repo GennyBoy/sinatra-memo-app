@@ -68,6 +68,10 @@ delete '/memos/:id' do |id|
   redirect to('/')
 end
 
+not_found do
+  erb :notfound
+end
+
 private
 
 def parse_memos_json
