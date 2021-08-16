@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'erb'
 require 'json'
 require 'sinatra'
@@ -6,50 +8,50 @@ require 'sinatra/reloader'
 include ERB::Util
 
 get '/' do
-  @memos = load_all_memos
-  erb :'index'
+  @memos = parse_memos_json
+  erb :index
 end
 
 get '/new' do
-  erb :'new'
+  erb :new
 end
 
 get '/memos/:id' do |id|
-  memos = load_all_memos
+  memos = parse_memos_json
 
   @memo = fetch_memo_by_id(memos, id)
 
-  erb :'show'
+  erb :show
 end
 
 get '/memos/:id/edit' do |id|
-  memos = load_all_memos
+  memos = parse_memos_json
 
   @memo = fetch_memo_by_id(memos, id)
 
-  erb :'edit'
+  erb :edit
 end
 
 post '/memos' do
-  id = File.read("db/memos/index.txt").to_i
-  memo = {:id => id, :title => h(params[:title]), :content => h(params[:content]) }
-  memos = load_all_memos
+  id = File.read('db/memos/index.txt').to_i
+  memo = { id: id, title: h(params[:title]), content: h(params[:content]) }
+  memos = parse_memos_json
   memos.push memo
 
   write_memos_json(memos)
 
-  # idに1を足して、次に作成されるメモが連番になるようにする
-  File.open("db/memos/index.txt", "w") { |f| f.puts id + 1 }
+  # add 1 to make the id consecutive
+  File.open('db/memos/index.txt', 'w') { |f| f.puts id + 1 }
 
   redirect to('/')
 end
 
 patch '/memos/:id' do |id|
-  memos = load_all_memos
+  memos = parse_memos_json
   memo_to_edit = fetch_memo_by_id(memos, id)
 
-  memo_to_edit["title"] = h(params[:title])
-  memo_to_edit["content"] = h(params[:content])
+  memo_to_edit[:title] = h(params[:title])
+  memo_to_edit[:content] = h(params[:content])
 
   write_memos_json(memos)
 
@@ -57,9 +59,9 @@ patch '/memos/:id' do |id|
 end
 
 delete '/memos/:id' do |id|
-  memos = load_all_memos
+  memos = parse_memos_json
 
-  memos.delete_if { |memo| memo["id"] == id.to_i }
+  memos.delete_if { |memo| memo[:id] == id.to_i }
 
   write_memos_json(memos)
 
@@ -68,18 +70,16 @@ end
 
 private
 
-def load_all_memos
-  JSON.load(File.read("db/memos/memos.json"))
+def parse_memos_json
+  JSON.parse(File.read('db/memos/memos.json'), symbolize_names: true)
 end
 
 def write_memos_json(memos)
-  File.open("db/memos/memos.json", "w") { |f| f.puts JSON.pretty_generate(memos) }
+  File.open('db/memos/memos.json', 'w') { |f| f.puts JSON.pretty_generate(memos) }
 end
 
 def fetch_memo_by_id(memos, id)
   memos.each do |memo|
-    if memo["id"] == id.to_i
-      return memo
-    end
+    return memo if memo[:id] == id.to_i
   end
 end

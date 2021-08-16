@@ -11,12 +11,12 @@
 </header>
 <div class="body">
   <div class="form">
-    <h2 class="show-memo_items"><%= @memo["title"] %></h2>
-    <% content_text = @memo["content"].gsub(/\n|\r|\r\n/, "<br>") %>
+    <h2 class="show-memo_items"><%= @memo[:title] %></h2>
+    <% content_text = @memo[:content].gsub(/\n|\r|\r\n/, "<br>") %>
     <div class="show-memo_items"><%= content_text %></div>
     <div class="show-memo_form_button_area">
-      <a href="/memos/<%= @memo["id"] %>/edit" class="button_center">変更</a>
-      <form action="/memos/<%= @memo["id"] %>" method="post">
+      <a href="/memos/<%= @memo[:id] %>/edit" class="button_center">変更</a>
+      <form action="/memos/<%= @memo[:id] %>" method="post">
         <input type="hidden" name="_method" value="delete">
         <input type="submit" value="削除" class="button_center form_button">
       </form>
