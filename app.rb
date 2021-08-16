@@ -83,11 +83,3 @@ def fetch_memo_by_id(memos, id)
     end
   end
 end
-
-helpers do
-  def h(text)
-    escape_html(text)
-  end
-end
-
-
