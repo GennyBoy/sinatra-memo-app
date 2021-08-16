@@ -59,9 +59,7 @@ end
 delete '/memos/:id' do |id|
   memos = load_all_memos
 
-  memos.each_with_index do |memo, index|
-    memos.delete_at index if memo["id"] == id.to_i
-  end
+  memos.delete_if { |memo| memo["id"] == id.to_i }
 
   write_memos_json(memos)
 
