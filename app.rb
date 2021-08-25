@@ -80,7 +80,5 @@ def write_memos_json(memos)
 end
 
 def fetch_memo_by_id(memos, id)
-  memos.each do |memo|
-    return memo if memo[:id] == id
-  end
+  memos.find { |memo| memo[:id] == id }
 end
