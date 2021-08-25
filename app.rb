@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'json'
+require 'securerandom'
 require 'sinatra'
 require 'sinatra/reloader'
 
@@ -33,15 +34,11 @@ get '/memos/:id/edit' do |id|
 end
 
 post '/memos' do
-  id = File.read('db/memos/index.txt').to_i
-  memo = { id: id, title: h(params[:title]), content: h(params[:content]) }
+  memo = { id: SecureRandom.uuid, title: h(params[:title]), content: h(params[:content]) }
   memos = parse_memos_json
   memos.push memo
 
   write_memos_json(memos)
-
-  # add 1 to make the id consecutive
-  File.open('db/memos/index.txt', 'w') { |f| f.puts id + 1 }
 
   redirect to('/')
 end
@@ -61,7 +58,7 @@ end
 delete '/memos/:id' do |id|
   memos = parse_memos_json
 
-  memos.delete_if { |memo| memo[:id] == id.to_i }
+  memos.delete_if { |memo| memo[:id] == id }
 
   write_memos_json(memos)
 
@@ -84,6 +81,6 @@ end
 
 def fetch_memo_by_id(memos, id)
   memos.each do |memo|
-    return memo if memo[:id] == id.to_i
+    return memo if memo[:id] == id
   end
 end
