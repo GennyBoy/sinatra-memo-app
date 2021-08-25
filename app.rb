@@ -38,7 +38,7 @@ get '/memos/:id/edit' do |id|
 end
 
 post '/memos' do
-  memo = { id: SecureRandom.uuid, title: h(params[:title]), content: h(params[:content]) }
+  memo = { id: SecureRandom.uuid, title: params[:title], content: params[:content] }
   memos = parse_memos_json
   memos.push memo
 
@@ -51,8 +51,8 @@ patch '/memos/:id' do |id|
   memos = parse_memos_json
   memo_to_edit = fetch_memo_by_id(memos, id)
 
-  memo_to_edit[:title] = h(params[:title])
-  memo_to_edit[:content] = h(params[:content])
+  memo_to_edit[:title] = params[:title]
+  memo_to_edit[:content] = params[:content]
 
   write_memos_json(memos)
 
