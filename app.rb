@@ -22,7 +22,11 @@ get '/memos/:id' do |id|
 
   @memo = fetch_memo_by_id(memos, id)
 
-  erb :show
+  if @memo.nil?
+    erb :notfound
+  else
+    erb :show
+  end
 end
 
 get '/memos/:id/edit' do |id|
