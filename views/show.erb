@@ -1,0 +1,17 @@
+<header>
+  <h1 class="header__title">メモアプリ</h1>
+  <a href="/" class="button">Topへ戻る</a>
+</header>
+<div class="body">
+  <div class="form">
+    <h2 class="show-memo_items"><%= h(@memo[:title]) %></h2>
+    <div class="show-memo_items"><%= h(@memo[:content]) %></div>
+    <div class="show-memo_form_button_area">
+      <a href="/memos/<%= @memo[:id] %>/edit" class="button_center">変更</a>
+      <form action="/memos/<%= @memo[:id] %>" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <input type="submit" value="削除" class="button_center form_button">
+      </form>
+    </div>
+  </div>
+</div>

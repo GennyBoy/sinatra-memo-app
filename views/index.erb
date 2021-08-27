@@ -1,0 +1,13 @@
+<header>
+  <h1 class="header__title">メモアプリ</h1>
+  <a href="/memos/new" class="button">追加</a>
+</header>
+<div class="body">
+  <ul>
+  <% @memos.each do |memo| %>
+    <li>
+      <a href="/memos/<%= h(memo[:id]) %>"><%= h(memo[:title]) %></a>
+    </li>
+  <% end %>
+  </ul>
+</div>
