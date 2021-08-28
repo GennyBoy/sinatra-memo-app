@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'json'
+require 'pg'
 require 'securerandom'
 require 'sinatra'
 require 'sinatra/reloader'
@@ -9,7 +10,8 @@ require 'sinatra/reloader'
 include ERB::Util
 
 get '/' do
-  @memos = parse_memos_json
+  @memos = fetch_memos
+
   erb :index
 end
 
@@ -18,7 +20,7 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do |id|
-  memos = parse_memos_json
+  memos = fetch_memos
 
   @memo = fetch_memo_by_id(memos, id)
 
@@ -30,7 +32,7 @@ get '/memos/:id' do |id|
 end
 
 get '/memos/:id/edit' do |id|
-  memos = parse_memos_json
+  memos = fetch_memos
 
   @memo = fetch_memo_by_id(memos, id)
 
@@ -83,6 +85,14 @@ def write_memos_json(memos)
   File.open('db/memos/memos.json', 'w') { |f| f.puts JSON.pretty_generate(memos) }
 end
 
+def fetch_memos
+  conn = PG.connect( dbname: 'memoapp' )
+  results = conn.exec(
+    "SELECT * FROM memos"
+  )
+  (0..results.ntuples-1).map { |n| results[n] }
+end
+
 def fetch_memo_by_id(memos, id)
-  memos.find { |memo| memo[:id] == id }
+  memos.find { |memo| memo["id"] == id }
 end
