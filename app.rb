@@ -40,11 +40,7 @@ get '/memos/:id/edit' do |id|
 end
 
 post '/memos' do
-  memo = { id: SecureRandom.uuid, title: params[:title], content: params[:content] }
-  memos = parse_memos_json
-  memos.push memo
-
-  write_memos_json(memos)
+  insert_memo(SecureRandom.uuid, params[:title], params[:content])
 
   redirect to('/')
 end
@@ -91,6 +87,20 @@ def fetch_memos
     "SELECT * FROM memos"
   )
   (0..results.ntuples-1).map { |n| results[n] }
+end
+
+def insert_memo(id, title, content )
+  current_time = Time.now
+  conn = PG.connect( dbname: 'memoapp' )
+  conn.exec(
+    "INSERT INTO memos (
+      id, title, content, created_at, updated_at
+    )
+    VALUES
+    (
+      '#{id}', '#{title}', '#{content}', '#{current_time}', '#{current_time}'
+    )"
+  )
 end
 
 def fetch_memo_by_id(memos, id)
