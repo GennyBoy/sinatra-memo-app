@@ -95,9 +95,11 @@ end
 
 def delete_memo(db: nil, id: nil)
   #TODO なかった場合のエラー処理考える
-  db.exec(
-    "DELETE from memos where id = '#{id}'"
+  db.prepare(
+    'delete',
+    "DELETE from memos where id = $1"
   )
+  db.exec_prepared('delete', [id])
 end
 
 def fetch_memo_by_id(memos, id)
