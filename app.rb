@@ -46,13 +46,7 @@ post '/memos' do
 end
 
 patch '/memos/:id' do |id|
-  memos = parse_memos_json
-  memo_to_edit = fetch_memo_by_id(memos, id)
-
-  memo_to_edit[:title] = params[:title]
-  memo_to_edit[:content] = params[:content]
-
-  write_memos_json(memos)
+  update_memo(id, params[:title], params[:content])
 
   redirect to('/')
 end
@@ -89,9 +83,9 @@ def fetch_memos
   (0..results.ntuples-1).map { |n| results[n] }
 end
 
-def insert_memo(id, title, content )
+def insert_memo(id, title, content)
   current_time = Time.now
-  conn = PG.connect( dbname: 'memoapp' )
+  conn = PG.connect(dbname: 'memoapp')
   conn.exec(
     "INSERT INTO memos (
       id, title, content, created_at, updated_at
@@ -100,6 +94,20 @@ def insert_memo(id, title, content )
     (
       '#{id}', '#{title}', '#{content}', '#{current_time}', '#{current_time}'
     )"
+  )
+end
+
+def update_memo(id, title, content)
+  current_time = Time.now
+  conn = PG.connect(dbname: 'memoapp')
+  conn.exec(
+    "UPDATE memos SET
+      title = '#{title}',
+      content = '#{content}',
+      updated_at = '#{current_time}'
+    WHERE
+      id = '#{id}'
+    "
   )
 end
 
