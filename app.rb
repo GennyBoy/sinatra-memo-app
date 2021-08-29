@@ -34,7 +34,7 @@ get '/memos/:id' do |id|
 end
 
 get '/memos/:id/edit' do |id|
-  memos = fetch_memos
+  memos = fetch_memos(db: conn)
 
   # なかった場合
   @memo = fetch_memo_by_id(memos, id)
@@ -69,21 +69,16 @@ end
 private
 
 def fetch_memos(db: nil)
-  results = db.exec(
-    "SELECT * FROM memos"
-  )
+  results = db.exec("SELECT * FROM memos")
   (0..results.ntuples-1).map { |n| results[n] }
 end
 
 def insert_memo(db: nil, id: nil, title: nil , content: nil)
   current_time = Time.now
-  db.prepare('insert', "INSERT INTO memos (
-      id, title, content, created_at, updated_at
-    )
-    VALUES
-    (
-      $1, $2, $3, $4, $5
-    )"
+  db.prepare(
+    'insert',
+    "INSERT INTO memos (id, title, content, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, $5)"
   )
   db.exec_prepared('insert', [id, title, content, current_time, current_time])
 end
@@ -91,15 +86,11 @@ end
 def update_memo(db: nil, id: nil, title: nil , content: nil)
   #TODO なかった場合のエラー処理考える
   current_time = Time.now
-  db.exec(
-    "UPDATE memos SET
-      title = '#{title}',
-      content = '#{content}',
-      updated_at = '#{current_time}'
-    WHERE
-      id = '#{id}'
-    "
+  db.prepare(
+    'update',
+    "UPDATE memos SET title=$1, content=$2, updated_at=$3 WHERE id=$4"
   )
+  db.exec_prepared('update',[title, content, current_time, id])
 end
 
 def delete_memo(db: nil, id: nil)
