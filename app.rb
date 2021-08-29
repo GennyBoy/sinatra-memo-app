@@ -52,11 +52,7 @@ patch '/memos/:id' do |id|
 end
 
 delete '/memos/:id' do |id|
-  memos = parse_memos_json
-
-  memos.delete_if { |memo| memo[:id] == id }
-
-  write_memos_json(memos)
+  delete_memo(id)
 
   redirect to('/')
 end
@@ -108,6 +104,14 @@ def update_memo(id, title, content)
     WHERE
       id = '#{id}'
     "
+  )
+end
+
+def delete_memo(id)
+  # なかった場合のエラー処理考える
+  conn = PG.connect(dbname: 'memoapp')
+  conn.exec(
+    "DELETE from memos where id = '#{id}'"
   )
 end
 
