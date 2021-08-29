@@ -36,18 +36,21 @@ end
 get '/memos/:id/edit' do |id|
   memos = fetch_memos
 
+  # なかった場合
   @memo = fetch_memo_by_id(memos, id)
 
   erb :edit
 end
 
 post '/memos' do
+  #TODO タイトルが空だった場合はエラーにする。
   insert_memo(db: conn, id: SecureRandom.uuid, title: params[:title], content: params[:content])
 
   redirect to('/')
 end
 
 patch '/memos/:id' do |id|
+  #TODO タイトルが空だった場合はエラーにする。
   update_memo(db: conn, id: id, title: params[:title], content: params[:content])
 
   redirect to('/')
@@ -86,6 +89,7 @@ def insert_memo(db: nil, id: nil, title: nil , content: nil)
 end
 
 def update_memo(db: nil, id: nil, title: nil , content: nil)
+  #TODO なかった場合のエラー処理考える
   current_time = Time.now
   db.exec(
     "UPDATE memos SET
@@ -99,7 +103,7 @@ def update_memo(db: nil, id: nil, title: nil , content: nil)
 end
 
 def delete_memo(db: nil, id: nil)
-  # なかった場合のエラー処理考える
+  #TODO なかった場合のエラー処理考える
   db.exec(
     "DELETE from memos where id = '#{id}'"
   )
