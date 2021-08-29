@@ -9,8 +9,10 @@ require 'sinatra/reloader'
 
 include ERB::Util
 
+conn = PG.connect(dbname: 'memoapp')
+
 get '/' do
-  @memos = fetch_memos
+  @memos = fetch_memos(db: conn)
 
   erb :index
 end
@@ -20,7 +22,7 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do |id|
-  memos = fetch_memos
+  memos = fetch_memos(db: conn)
 
   @memo = fetch_memo_by_id(memos, id)
 
@@ -40,19 +42,19 @@ get '/memos/:id/edit' do |id|
 end
 
 post '/memos' do
-  insert_memo(SecureRandom.uuid, params[:title], params[:content])
+  insert_memo(db: conn, id: SecureRandom.uuid, title: params[:title], content: params[:content])
 
   redirect to('/')
 end
 
 patch '/memos/:id' do |id|
-  update_memo(id, params[:title], params[:content])
+  update_memo(db: conn, id: id, title: params[:title], content: params[:content])
 
   redirect to('/')
 end
 
 delete '/memos/:id' do |id|
-  delete_memo(id)
+  delete_memo(db:conn, id: id)
 
   redirect to('/')
 end
@@ -63,40 +65,29 @@ end
 
 private
 
-def parse_memos_json
-  JSON.parse(File.read('db/memos/memos.json'), symbolize_names: true)
-end
-
-def write_memos_json(memos)
-  File.open('db/memos/memos.json', 'w') { |f| f.puts JSON.pretty_generate(memos) }
-end
-
-def fetch_memos
-  conn = PG.connect( dbname: 'memoapp' )
-  results = conn.exec(
+def fetch_memos(db: nil)
+  results = db.exec(
     "SELECT * FROM memos"
   )
   (0..results.ntuples-1).map { |n| results[n] }
 end
 
-def insert_memo(id, title, content)
+def insert_memo(db: nil, id: nil, title: nil , content: nil)
   current_time = Time.now
-  conn = PG.connect(dbname: 'memoapp')
-  conn.exec(
-    "INSERT INTO memos (
+  db.prepare('insert', "INSERT INTO memos (
       id, title, content, created_at, updated_at
     )
     VALUES
     (
-      '#{id}', '#{title}', '#{content}', '#{current_time}', '#{current_time}'
+      $1, $2, $3, $4, $5
     )"
   )
+  db.exec_prepared('insert', [id, title, content, current_time, current_time])
 end
 
-def update_memo(id, title, content)
+def update_memo(db: nil, id: nil, title: nil , content: nil)
   current_time = Time.now
-  conn = PG.connect(dbname: 'memoapp')
-  conn.exec(
+  db.exec(
     "UPDATE memos SET
       title = '#{title}',
       content = '#{content}',
@@ -107,10 +98,9 @@ def update_memo(id, title, content)
   )
 end
 
-def delete_memo(id)
+def delete_memo(db: nil, id: nil)
   # なかった場合のエラー処理考える
-  conn = PG.connect(dbname: 'memoapp')
-  conn.exec(
+  db.exec(
     "DELETE from memos where id = '#{id}'"
   )
 end
