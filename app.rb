@@ -78,14 +78,14 @@ end
 private
 
 def fetch_memos(db: nil)
-  results = db.exec("SELECT * FROM memos")
+  results = db.exec('SELECT * FROM memos')
   (0..results.ntuples - 1).map { |n| results[n] }
 end
 
 def fetch_memo(db: nil, id: nil)
   db.prepare(
     'show',
-    "SELECT * FROM memos WHERE id=$1"
+    'SELECT * FROM memos WHERE id=$1'
   )
   result = db.exec_prepared('show', [id])[0]
   db.exec('DEALLOCATE show')
@@ -95,26 +95,29 @@ end
 def insert_memo(db: nil, id: nil, title: nil, content: nil)
   current_time = Time.now
   db.prepare(
-    'insert',
+    'add',
     "INSERT INTO memos (id, title, content, created_at, updated_at)
       VALUES ($1, $2, $3, $4, $5)"
   )
-  db.exec_prepared('insert', [id, title, content, current_time, current_time])
+  db.exec_prepared('add', [id, title, content, current_time, current_time])
+  db.exec('DEALLOCATE add')
 end
 
 def update_memo(db: nil, id: nil, title: nil, content: nil)
   current_time = Time.now
   db.prepare(
-    'update',
-    "UPDATE memos SET title=$1, content=$2, updated_at=$3 WHERE id=$4"
+    'amend',
+    'UPDATE memos SET title=$1, content=$2, updated_at=$3 WHERE id=$4'
   )
-  db.exec_prepared('update', [title, content, current_time, id])
+  db.exec_prepared('amend', [title, content, current_time, id])
+  db.exec('DEALLOCATE amend')
 end
 
 def delete_memo(db: nil, id: nil)
   db.prepare(
     'delete',
-    "DELETE from memos where id = $1"
+    'DELETE from memos where id = $1'
   )
   db.exec_prepared('delete', [id])
+  db.exec('DEALLOCATE delete')
 end
