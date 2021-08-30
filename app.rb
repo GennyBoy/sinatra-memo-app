@@ -43,8 +43,8 @@ end
 
 post '/memos' do
   title = params[:title]
-  if title == "" || title.nil?
-    @error_message = "タイトルを入力してください"
+  if title == '' || title.nil?
+    @error_message = 'タイトルを入力してください'
     @content = params[:content]
     erb :new
   else
@@ -55,8 +55,8 @@ end
 
 patch '/memos/:id' do |id|
   title = params[:title]
-  if title == "" || title.nil?
-    @error_message = "タイトルを入力してください"
+  if title == '' || title.nil?
+    @error_message = 'タイトルを入力してください'
     @memo = fetch_memo(db: conn, id: id)
     erb :edit
   else
@@ -66,7 +66,7 @@ patch '/memos/:id' do |id|
 end
 
 delete '/memos/:id' do |id|
-  delete_memo(db:conn, id: id)
+  delete_memo(db: conn, id: id)
 
   redirect to('/')
 end
@@ -79,7 +79,7 @@ private
 
 def fetch_memos(db: nil)
   results = db.exec("SELECT * FROM memos")
-  (0..results.ntuples-1).map { |n| results[n] }
+  (0..results.ntuples - 1).map { |n| results[n] }
 end
 
 def fetch_memo(db: nil, id: nil)
@@ -92,7 +92,7 @@ def fetch_memo(db: nil, id: nil)
   result
 end
 
-def insert_memo(db: nil, id: nil, title: nil , content: nil)
+def insert_memo(db: nil, id: nil, title: nil, content: nil)
   current_time = Time.now
   db.prepare(
     'insert',
@@ -102,13 +102,13 @@ def insert_memo(db: nil, id: nil, title: nil , content: nil)
   db.exec_prepared('insert', [id, title, content, current_time, current_time])
 end
 
-def update_memo(db: nil, id: nil, title: nil , content: nil)
+def update_memo(db: nil, id: nil, title: nil, content: nil)
   current_time = Time.now
   db.prepare(
     'update',
     "UPDATE memos SET title=$1, content=$2, updated_at=$3 WHERE id=$4"
   )
-  db.exec_prepared('update',[title, content, current_time, id])
+  db.exec_prepared('update', [title, content, current_time, id])
 end
 
 def delete_memo(db: nil, id: nil)
