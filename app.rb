@@ -22,9 +22,7 @@ get '/memos/new' do
 end
 
 get '/memos/:id' do |id|
-  memos = fetch_memos(db: conn)
-
-  @memo = fetch_memo_by_id(memos, id)
+  @memo = fetch_memo(db: conn, id: id)
 
   if @memo.nil?
     erb :notfound
@@ -34,26 +32,37 @@ get '/memos/:id' do |id|
 end
 
 get '/memos/:id/edit' do |id|
-  memos = fetch_memos(db: conn)
+  @memo = fetch_memo(db: conn, id: id)
 
-  # なかった場合
-  @memo = fetch_memo_by_id(memos, id)
-
-  erb :edit
+  if @memo.nil?
+    erb :notfound
+  else
+    erb :edit
+  end
 end
 
 post '/memos' do
-  #TODO タイトルが空だった場合はエラーにする。
-  insert_memo(db: conn, id: SecureRandom.uuid, title: params[:title], content: params[:content])
-
-  redirect to('/')
+  title = params[:title]
+  if title == "" || title.nil?
+    @error_message = "タイトルを入力してください"
+    @content = params[:content]
+    erb :new
+  else
+    insert_memo(db: conn, id: SecureRandom.uuid, title: title, content: params[:content])
+    redirect to('/')
+  end
 end
 
 patch '/memos/:id' do |id|
-  #TODO タイトルが空だった場合はエラーにする。
-  update_memo(db: conn, id: id, title: params[:title], content: params[:content])
-
-  redirect to('/')
+  title = params[:title]
+  if title == "" || title.nil?
+    @error_message = "タイトルを入力してください"
+    @memo = fetch_memo(db: conn, id: id)
+    erb :edit
+  else
+    update_memo(db: conn, id: id, title: title, content: params[:content])
+    redirect to('/')
+  end
 end
 
 delete '/memos/:id' do |id|
@@ -73,6 +82,16 @@ def fetch_memos(db: nil)
   (0..results.ntuples-1).map { |n| results[n] }
 end
 
+def fetch_memo(db: nil, id: nil)
+  db.prepare(
+    'show',
+    "SELECT * FROM memos WHERE id=$1"
+  )
+  result = db.exec_prepared('show', [id])[0]
+  db.exec('DEALLOCATE show')
+  result
+end
+
 def insert_memo(db: nil, id: nil, title: nil , content: nil)
   current_time = Time.now
   db.prepare(
@@ -84,7 +103,6 @@ def insert_memo(db: nil, id: nil, title: nil , content: nil)
 end
 
 def update_memo(db: nil, id: nil, title: nil , content: nil)
-  #TODO なかった場合のエラー処理考える
   current_time = Time.now
   db.prepare(
     'update',
@@ -94,14 +112,9 @@ def update_memo(db: nil, id: nil, title: nil , content: nil)
 end
 
 def delete_memo(db: nil, id: nil)
-  #TODO なかった場合のエラー処理考える
   db.prepare(
     'delete',
     "DELETE from memos where id = $1"
   )
   db.exec_prepared('delete', [id])
-end
-
-def fetch_memo_by_id(memos, id)
-  memos.find { |memo| memo["id"] == id }
 end
