@@ -9,6 +9,12 @@
 bundle install
 ```
 
+### memosテーブルの作成
+ローカルにあるDBにmemosテーブルを作成する
+```
+psql -f db/setup_memos_table.sql db_name
+```
+
 ### サーバーの起動
 ```
 bundle exec ruby app.rb
