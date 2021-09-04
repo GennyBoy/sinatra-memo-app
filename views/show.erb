@@ -4,8 +4,8 @@
 </header>
 <div class="body">
   <div class="form">
-    <h2 class="show-memo_items"><%= h(@memo["title"]) %></h2>
-    <div class="show-memo_items"><%= h(@memo["content"]) %></div>
+    <h2 class="show-memo_items"><%= h(@memo["title"]).gsub(/\n|\r|\r\n/, "<br>") %></h2>
+    <div class="show-memo_items"><%= h(@memo["content"]).gsub(/\n|\r|\r\n/, "<br>") %></div>
     <div class="show-memo_form_button_area">
       <a href="/memos/<%= @memo["id"] %>/edit" class="button_center">変更</a>
       <form action="/memos/<%= @memo["id"] %>" method="post">
