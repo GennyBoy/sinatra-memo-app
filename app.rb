@@ -9,6 +9,7 @@ require 'sinatra/reloader'
 
 include ERB::Util
 
+# 環境変数によってテストと本番でつなぎ先変えられるかな
 conn = PG.connect(dbname: 'memoapp')
 
 get '/' do
@@ -87,7 +88,13 @@ def fetch_memo(db: nil, id: nil)
     'show',
     'SELECT * FROM memos WHERE id=$1'
   )
-  result = db.exec_prepared('show', [id])[0]
+
+  begin
+    result = db.exec_prepared('show', [id])[0]
+  rescue
+    result = nil
+  end
+
   db.exec('DEALLOCATE show')
   result
 end
