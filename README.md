@@ -9,13 +9,19 @@
 bundle install
 ```
 
-### memosテーブルの作成
-ローカルにあるDBにmemosテーブルを作成する
+### DBとテーブルを作成
+ローカルに必要なDBとテーブルを作成する
 ```
-psql -f db/setup_memos_table.sql db_name
+psql -f db/setup.sql postgres
 ```
 
 ### サーバーの起動
 ```
 bundle exec ruby app.rb
+```
+
+### DBとテーブルを削除
+DBごと完全に削除されるので注意
+```
+psql -f db/teardown.sql postgres
 ```
