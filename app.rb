@@ -9,8 +9,16 @@ require 'sinatra/reloader'
 
 include ERB::Util
 
-# 環境変数によってテストと本番でつなぎ先変えられるかな
-conn = PG.connect(dbname: 'memoapp')
+def create_db_connection(dbname)
+  PG.connect(dbname: dbname)
+end
+
+env = ARGV[0]
+if env == 'production'
+  conn = create_db_connection('memoapp')
+else
+  conn = create_db_connection('test_memoapp')
+end
 
 get '/' do
   @memos = fetch_memos(db: conn)
