@@ -1,4 +1,4 @@
-require './app'
+require './../app'
 require 'minitest/autorun'
 require 'rack/test'
 
@@ -73,6 +73,31 @@ class MyAppTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_includes last_response.body, 'タイトルを入力してください'
   end
-  # これはいわば結合テストなので、単体テスト(privateのメソッドレベルでどうやってテストできるか調べる)
 
+  def test_patch_memo
+    patch '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b204', :title => '更新したタイトル', :content => '更新した本文'
+
+    # 成功した場合、最後の処理がリダイレクトなのでステータスコードは302になる
+    assert_equal 302, last_response.status
+  end
+
+  def test_patch_memo_empty_string_title
+    patch '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b204', :title => '', :content => '更新した本文'
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'タイトルを入力してください'
+  end
+
+  def test_patch_memo_nil_title
+    patch '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b204', :title => nil, :content => '更新した本文'
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, 'タイトルを入力してください'
+  end
+
+  def test_delete_memo
+    delete '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b204'
+
+    assert_equal 200, last_response.status
+  end
 end

@@ -52,6 +52,7 @@ end
 
 post '/memos' do
   title = params[:title]
+
   if title == '' || title.nil?
     @error_message = 'タイトルを入力してください'
     @content = params[:content]
@@ -64,6 +65,7 @@ end
 
 patch '/memos/:id' do |id|
   title = params[:title]
+
   if title == '' || title.nil?
     @error_message = 'タイトルを入力してください'
     @memo = fetch_memo(db: conn, id: id)
