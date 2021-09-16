@@ -4,7 +4,7 @@ require './app'
 require 'minitest/autorun'
 require 'rack/test'
 
-# Class to test app
+#:nodoc:
 class MyAppTest < Minitest::Test
   include Rack::Test::Methods
 
