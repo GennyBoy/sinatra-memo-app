@@ -14,11 +14,11 @@ def create_db_connection(dbname)
 end
 
 env = ARGV[0]
-if env == 'production'
-  conn = create_db_connection('memoapp')
-else
-  conn = create_db_connection('test_memoapp')
-end
+conn = if env == 'production'
+         create_db_connection('memoapp')
+       else
+         create_db_connection('test_memoapp')
+       end
 
 get '/' do
   @memos = fetch_memos(db: conn)
@@ -94,14 +94,11 @@ def fetch_memos(db: nil)
 end
 
 def fetch_memo(db: nil, id: nil)
-  db.prepare(
-    'show',
-    'SELECT * FROM memos WHERE id=$1'
-  )
+  db.prepare('show', 'SELECT * FROM memos WHERE id=$1')
 
   begin
     result = db.exec_prepared('show', [id])[0]
-  rescue
+  rescue StandardError
     result = nil
   end
 
