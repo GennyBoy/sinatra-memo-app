@@ -1,4 +1,4 @@
-require './../app'
+require './app'
 require 'minitest/autorun'
 require 'rack/test'
 
@@ -54,10 +54,7 @@ class MyAppTest < Minitest::Test
   def test_post_memos
     post '/memos', :title => 'POSTのタイトル', :content => 'POSTのcontent'
 
-    # 成功した場合、最後の処理がリダイレクトなのでステータスコードは302になる
     assert_equal 302, last_response.status
-    # 実装側で作成されたmemoのuuidを返すようにしたい
-    # それを使ってdeleteでteardownする
   end
 
   def test_post_memos_empty_string
@@ -96,8 +93,8 @@ class MyAppTest < Minitest::Test
   end
 
   def test_delete_memo
-    delete '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b204'
+    delete '/memos/c58668db-74aa-4025-b7ba-1a5d72f6b205'
 
-    assert_equal 200, last_response.status
+    assert_equal 302, last_response.status
   end
 end

@@ -12,16 +12,15 @@ bundle install
 ### DBとテーブルを作成
 ローカルに必要なDBとテーブルを作成する
 ```
-psql -f db/setup.sql postgres
+psql -f db/setup_app_db.sql postgres
 ```
 
 ### サーバーの起動
 ```
-bundle exec ruby app.rb
+bundle exec ruby app.rb production
 ```
 
-### DBとテーブルを削除
-DBごと完全に削除されるので注意
+### テストの実行
 ```
-psql -f db/teardown.sql postgres
+./run_test.sh
 ```
