@@ -98,8 +98,11 @@ def fetch_memo(db: nil, id: nil)
 
   begin
     result = db.exec_prepared('show', [id])[0]
-  rescue StandardError
+  rescue => e
     result = nil
+    p e.class
+    p e.message
+    p e.backtrace
   end
 
   db.exec('DEALLOCATE show')
