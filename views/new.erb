@@ -4,7 +4,8 @@
 <div class="body">
   <form action="/memos" method="post" class="form">
     <input class="form_item form_title" type="text" name="title" value="" placeholder="タイトル">
-    <textarea class="form_item form_content" name="content" rows="5" placeholder="本文"></textarea>
+    <div class="error_message"><%= @error_message %></div>
+    <textarea class="form_item form_content" name="content" rows="5" placeholder="本文"><%= @content %></textarea>
     <div class="form_button_area">
       <input class="form_item form_button" type="submit" value="保存">
     </div>
