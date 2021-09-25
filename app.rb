@@ -98,7 +98,7 @@ def fetch_memo(db: nil, id: nil)
 
   begin
     result = db.exec_prepared('show', [id])[0]
-  rescue => e
+  rescue PG::Error => e
     result = nil
     p e.class
     p e.message
